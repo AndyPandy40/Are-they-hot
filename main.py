@@ -75,6 +75,10 @@ class mainGame:
         self.random_image_1 = self.images[self.image_keys[self.rand_num_1]]
         self.random_image_2 = self.images[self.image_keys[self.rand_num_2]]
 
+        self.Button1 = Button(self.screen, LIGHT_GREEN, GREEN, "person 1", (self.screen_width//2, self.screen_height-100), 100, 50, 20, self.choose_option())
+        self.Button2 = Button(self.screen, LIGHT_GREEN, GREEN, "person 2", (3*self.screen_width//2, self.screen_height-100), 100, 50, 20, self.choose_option())
+
+
     def mainloop(self):
         while self.run_game:
             for event in pygame.event.get():
@@ -100,6 +104,9 @@ class mainGame:
 
         display_text("Who is hotter?", (self.screen_width//2, 50), 75, BLACK, self.screen)
 
+        self.Button1.draw_button(self.screen)
+        self.Button2.draw_button(self.screen)
+
 
 
         pygame.display.update()
@@ -121,6 +128,58 @@ class mainGame:
         self.run_game = False
         pygame.quit()
         exit()
+
+    def choose_option(self):
+        pass
+
+
+class Button:
+    def __init__(self, screen, inactive_color, active_color, text, position, width, height, text_size, action=None):
+        self.screen = screen
+        self.inactive_color = inactive_color
+        self.active_color = active_color
+        self.text = text
+        self.position = position
+        self.width = width
+        self.height = height
+        self.text_size = text_size
+        self.action = action
+
+        # Calculate the centre of the button
+        self.button_center = ((self.position[0] + (self.width//2)), self.position[1] + (self.height//2))
+
+        pygame.draw.rect(screen, self.inactive_color, (self.position[0], self.position[1], self.width, self.height), 0, 15)
+        display_text(self.text, self.button_center, self.text_size, BLACK, screen)
+
+        self.last_update = False
+        self.current_update = False
+
+    def draw_button(self, screen):
+        # Get the position of the mouse and see if the user is clicking
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+
+        # Check if user is hovering over button
+        if self.position[0] < mouse[0] < self.position[0] + self.width and self.position[1] < mouse[1] < self.position[1] + self.height:
+            self.current_update = True
+            button_color = self.active_color
+            if click[0]:
+                # Preform the button's action if the user clicks
+                self.action()
+        else:
+            button_color = self.inactive_color
+            self.current_update = False
+
+
+        if self.current_update != self.last_update:
+            # Draw a rectangle for the button
+            pygame.draw.rect(screen, button_color, (self.position[0], self.position[1], self.width, self.height), 0, 15)
+            
+            # Display text on button
+            display_text(self.text, self.button_center, self.text_size, BLACK, screen)
+
+        self.last_update = self.current_update
 
 
 game = mainGame()
