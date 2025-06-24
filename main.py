@@ -10,6 +10,12 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 
+# TODO
+# Fix sideways images
+# give buttons functionality
+# add text file to save the scores of people
+
+# Simple function to display text on the screen
 def display_text(text, position, size, color, screen):
 
     text = str(text).strip()
@@ -75,8 +81,8 @@ class mainGame:
         self.random_image_1 = self.images[self.image_keys[self.rand_num_1]]
         self.random_image_2 = self.images[self.image_keys[self.rand_num_2]]
 
-        self.Button1 = Button(self.screen, LIGHT_GREEN, GREEN, "person 1", (self.screen_width//2, self.screen_height-100), 100, 50, 20, self.choose_option())
-        self.Button2 = Button(self.screen, LIGHT_GREEN, GREEN, "person 2", (3*self.screen_width//2, self.screen_height-100), 100, 50, 20, self.choose_option())
+        self.Button1 = Button(self.screen, GREEN, LIGHT_GREEN, "person 1", (self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option())
+        self.Button2 = Button(self.screen, GREEN, LIGHT_GREEN, "person 2", (3*self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option())
 
 
     def mainloop(self):
@@ -172,12 +178,13 @@ class Button:
             self.current_update = False
 
 
-        if self.current_update != self.last_update:
-            # Draw a rectangle for the button
-            pygame.draw.rect(screen, button_color, (self.position[0], self.position[1], self.width, self.height), 0, 15)
-            
-            # Display text on button
-            display_text(self.text, self.button_center, self.text_size, BLACK, screen)
+
+        # Draw a rectangle for the button
+        pygame.draw.rect(screen, button_color, (self.position[0], self.position[1], self.width, self.height), 0, 15)
+        
+        
+        # Display text on button
+        display_text(self.text, self.button_center, self.text_size, BLACK, screen)
 
         self.last_update = self.current_update
 
