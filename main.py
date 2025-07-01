@@ -1,6 +1,7 @@
 import pygame
 import glob
 import random
+import csv
 
 pygame.init()
 
@@ -38,32 +39,54 @@ class mainGame:
 
         self.num_photos = 0
 
+
         self.images = {}
+
+
         # Load all PNG and JPG images from teacher_photos folder
-        for filepath in glob.glob("teacher_photos/*.png") + glob.glob("teacher_photos/*.jpg") + glob.glob("teacher_photos/*.jpeg") + glob.glob("teacher_photos/*.jfif"):
-            filename = filepath.split("/")[-1]  # Extract just the filename
-
-            # Load the image
-            image = pygame.image.load(filepath)
-
-            # Get the image's width and height
-            width, height = image.get_width(), image.get_height()
-
-            # Check if the image exceeds the max dimensions
-            if width > self.MAX_WIDTH or height > self.MAX_HEIGHT:
-                # Calculate scale factor to keep the aspect ratio
-                scale_factor = 3*min(self.MAX_WIDTH / width, self.MAX_HEIGHT / height)
-                new_width = int(width * scale_factor)
-                new_height = int(height * scale_factor)
-
-                # Resize the image using smoothscale (better quality, prevents rotation)
-                image = pygame.transform.smoothscale(image, (new_width, new_height))
 
 
-            self.images[filename] = image
-            self.num_photos += 1
+        self.teacher_stats = []
 
-        self.image_keys = list(self.images.keys())
+        # Read the CSV file into a list of dictionaries
+        with open('teacher_stats.csv', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                self.num_photos += 1
+                self.teacher_stats.append(row)
+
+        #output the dictionary
+        #print(teacher_stats)
+
+        
+
+        self.rand_num_1 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
+        self.rand_num_2 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
+
+
+        # Ensure both numbers are not the same
+        while self.rand_num_1 == self.rand_num_2:
+            self.rand_num_2 = random.randint(0, self.num_photos - 1)
+
+
+
+        self.teacher1_photo = pygame.image.load(self.teacher_stats[self.rand_num_1]["Photo"])
+        self.teacher2_photo = pygame.image.load(self.teacher_stats[self.rand_num_2]["Photo"])
+
+        # Get the image's width and height
+        width, height = self.teacher1_photo.get_width(), self.teacher1_photo.get_height()
+
+        # Check if the image exceeds the max dimensions
+        if width > self.MAX_WIDTH or height > self.MAX_HEIGHT:
+            # Calculate scale factor to keep the aspect ratio
+            scale_factor = 3*min(self.MAX_WIDTH / width, self.MAX_HEIGHT / height)
+            new_width = int(width * scale_factor)
+            new_height = int(height * scale_factor)
+
+            # Resize the image using smoothscale (better quality, prevents rotation)
+            self.teacher1_photo = pygame.transform.smoothscale(self.teacher1_photo, (new_width, new_height))
+
+
 
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -73,16 +96,9 @@ class mainGame:
         self.rand_num_1 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
         self.rand_num_2 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
 
-        # Ensure both numbers are not the same
-        while self.rand_num_1 == self.rand_num_2:
-            self.rand_num_2 = random.randint(0, self.num_photos - 1)
 
-        # Get random images based on the random numbers
-        self.random_image_1 = self.images[self.image_keys[self.rand_num_1]]
-        self.random_image_2 = self.images[self.image_keys[self.rand_num_2]]
-
-        self.Button1 = Button(self.screen, GREEN, LIGHT_GREEN, "person 1", (self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option())
-        self.Button2 = Button(self.screen, GREEN, LIGHT_GREEN, "person 2", (3*self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option())
+        self.Button1 = Button(self.screen, GREEN, LIGHT_GREEN, "person 1", (self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option)
+        self.Button2 = Button(self.screen, GREEN, LIGHT_GREEN, "person 2", (3*self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option)
 
 
     def mainloop(self):
@@ -105,8 +121,8 @@ class mainGame:
     def display_stuff(self):
         self.screen.fill(WHITE)
 
-        self.screen.blit(self.random_image_1, (0, 0))
-        self.screen.blit(self.random_image_2, (self.screen_width // 2, 0))
+        self.screen.blit(self.teacher1_photo, (0, 0))
+        self.screen.blit(self.teacher2_photo, (self.screen_width // 2, 0))
 
         display_text("Who is hotter?", (self.screen_width//2, 50), 75, BLACK, self.screen)
 
@@ -126,8 +142,8 @@ class mainGame:
             self.rand_num_2 = random.randint(0, self.num_photos - 1)
 
         # Get random images based on the random numbers
-        self.random_image_1 = self.images[self.image_keys[self.rand_num_1]]
-        self.random_image_2 = self.images[self.image_keys[self.rand_num_2]]
+        self.teacher1_photo = pygame.image.load(self.teacher_stats[self.rand_num_1]["Photo"])
+        self.teacher2_photo = pygame.image.load(self.teacher_stats[self.rand_num_2]["Photo"])
 
 
     def quit(self):
@@ -136,11 +152,15 @@ class mainGame:
         exit()
 
     def choose_option(self):
-        pass
+
+
+
+        # Generate new images when a button is clicked
+        self.generate_new_images()
 
 
 class Button:
-    def __init__(self, screen, inactive_color, active_color, text, position, width, height, text_size, action=None):
+    def __init__(self, screen, inactive_color, active_color, text, position, width, height, text_size, action):
         self.screen = screen
         self.inactive_color = inactive_color
         self.active_color = active_color
@@ -150,6 +170,8 @@ class Button:
         self.height = height
         self.text_size = text_size
         self.action = action
+        print(self.action)
+
 
         # Calculate the centre of the button
         self.button_center = ((self.position[0] + (self.width//2)), self.position[1] + (self.height//2))
@@ -160,33 +182,30 @@ class Button:
         self.last_update = False
         self.current_update = False
 
+        self.clicked = False
+
     def draw_button(self, screen):
-        # Get the position of the mouse and see if the user is clicking
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-
-
-        # Check if user is hovering over button
+        
+        # Check if hovering
         if self.position[0] < mouse[0] < self.position[0] + self.width and self.position[1] < mouse[1] < self.position[1] + self.height:
-            self.current_update = True
             button_color = self.active_color
-            if click[0]:
-                # Preform the button's action if the user clicks
+            # Check for click
+            if click[0] and not self.clicked:
                 self.action()
+                self.clicked = True
         else:
             button_color = self.inactive_color
-            self.current_update = False
 
+        # Reset click when mouse button is released
+        if not click[0]:
+            self.clicked = False
 
-
-        # Draw a rectangle for the button
+        # Draw button
         pygame.draw.rect(screen, button_color, (self.position[0], self.position[1], self.width, self.height), 0, 15)
-        
-        
-        # Display text on button
         display_text(self.text, self.button_center, self.text_size, BLACK, screen)
 
-        self.last_update = self.current_update
 
 
 game = mainGame()
