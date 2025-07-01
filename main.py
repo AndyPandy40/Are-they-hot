@@ -2,6 +2,8 @@ import pygame
 import glob
 import random
 import csv
+from PIL import Image, ImageOps
+import io
 
 pygame.init()
 
@@ -34,8 +36,8 @@ class mainGame:
         self.screen_height = 864
 
         # Define MAX_WIDTH and MAX_HEIGHT based on the screen size
-        self.MAX_WIDTH = self.screen_width // 4  # 25% of the screen width
-        self.MAX_HEIGHT = self.screen_height // 4  # 25% of the screen height
+        self.MAX_WIDTH = self.screen_width // 1.5  # 50% of the screen width
+        self.MAX_HEIGHT = self.screen_height // 1.5  # 50% of the screen height
 
         self.num_photos = 0
 
@@ -60,18 +62,7 @@ class mainGame:
 
         
 
-        self.rand_num_1 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
-        self.rand_num_2 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
-
-
-        # Ensure both numbers are not the same
-        while self.rand_num_1 == self.rand_num_2:
-            self.rand_num_2 = random.randint(0, self.num_photos - 1)
-
-
-
-        self.teacher1_photo = pygame.image.load(self.teacher_stats[self.rand_num_1]["Photo"])
-        self.teacher2_photo = pygame.image.load(self.teacher_stats[self.rand_num_2]["Photo"])
+        self.generate_new_images()
 
         # Get the image's width and height
         width, height = self.teacher1_photo.get_width(), self.teacher1_photo.get_height()
@@ -144,6 +135,29 @@ class mainGame:
         # Get random images based on the random numbers
         self.teacher1_photo = pygame.image.load(self.teacher_stats[self.rand_num_1]["Photo"])
         self.teacher2_photo = pygame.image.load(self.teacher_stats[self.rand_num_2]["Photo"])
+
+                
+        self.teacher1_photo = self.scale_image(self.teacher_stats[self.rand_num_1]["Photo"])
+        self.teacher2_photo = self.scale_image(self.teacher_stats[self.rand_num_2]["Photo"])
+
+
+
+    def scale_image(self, path):
+        # Load the image using PIL to respect EXIF orientation
+        pil_image = Image.open(path)
+        pil_image = ImageOps.exif_transpose(pil_image)  # Rotates image based on EXIF metadata
+
+        # Resize if needed
+        width, height = pil_image.size
+        if width > self.MAX_WIDTH or height > self.MAX_HEIGHT:
+            scale = min(self.MAX_WIDTH / width, self.MAX_HEIGHT / height)
+            new_size = (int(width * scale), int(height * scale))
+            pil_image = pil_image.resize(new_size, Image.Resampling.LANCZOS)
+
+        # Convert to Pygame surface
+        image_bytes = pil_image.convert("RGBA").tobytes()
+        return pygame.image.fromstring(image_bytes, pil_image.size, "RGBA")
+
 
 
     def quit(self):
