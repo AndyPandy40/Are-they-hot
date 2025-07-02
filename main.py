@@ -4,6 +4,8 @@ import random
 import csv
 from PIL import Image, ImageOps
 import io
+import os
+
 
 pygame.init()
 
@@ -14,11 +16,6 @@ LIGHT_RED = (200, 0, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-
-# TODO
-# Fix sideways images
-# give buttons functionality
-# add text file to save the scores of people
 
 # Simple function to display text on the screen
 def display_text(text, position, size, color, screen):
@@ -115,9 +112,13 @@ class mainGame:
         self.teacher1_photo = pygame.image.load(self.teacher_stats[self.rand_num_1]["Photo"])
         self.teacher2_photo = pygame.image.load(self.teacher_stats[self.rand_num_2]["Photo"])
 
-                
-        self.teacher1_photo = self.scale_image(self.teacher_stats[self.rand_num_1]["Photo"])
-        self.teacher2_photo = self.scale_image(self.teacher_stats[self.rand_num_2]["Photo"])
+                        
+        photo1_path = os.path.normpath(self.teacher_stats[self.rand_num_1]["Photo"])
+        photo2_path = os.path.normpath(self.teacher_stats[self.rand_num_2]["Photo"])
+
+        self.teacher1_photo = self.scale_image(photo1_path)
+        self.teacher2_photo = self.scale_image(photo2_path)
+
 
 
 
