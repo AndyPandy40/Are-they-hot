@@ -53,6 +53,9 @@ class mainGame:
                 self.teacher_stats.append(row)
 
 
+
+
+
         self.generate_new_images()
 
         self.clock = pygame.time.Clock()
@@ -143,6 +146,26 @@ class mainGame:
 
     def choose_option_1(self):
 
+        # Open a text file to save the number of times user's have voted
+        with open("User_data.txt", "r") as file:
+            number = int(file.readline().strip())
+
+        # Increment the number of votes
+        number += 1
+
+        # Write the updated number back to the file
+        with open("counter.txt", "w") as file:
+            file.write(str(number))
+
+        # close the file
+        file.close()
+
+        
+
+
+
+
+
         self.teacher_stats[self.rand_num_1]["Score"] = int(self.teacher_stats[self.rand_num_1]["Score"]) + 5
         self.teacher_stats[self.rand_num_2]["Score"] = int(self.teacher_stats[self.rand_num_2]["Score"]) - 5
 
@@ -158,6 +181,21 @@ class mainGame:
         self.generate_new_images()
 
     def choose_option_2(self):
+
+
+        # Open a text file to save the number of times user's have voted
+        with open("User_data.txt", "r") as file:
+            number = int(file.readline().strip())
+
+        # Increment the number of votes
+        number += 1
+
+        # Write the updated number back to the file
+        with open("counter.txt", "w") as file:
+            file.write(str(number))
+
+        # close the file
+        file.close()
 
         self.teacher_stats[self.rand_num_2]["Score"] = int(self.teacher_stats[self.rand_num_2]["Score"]) + 5
         self.teacher_stats[self.rand_num_1]["Score"] = int(self.teacher_stats[self.rand_num_1]["Score"]) - 5
