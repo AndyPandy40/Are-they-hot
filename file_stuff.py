@@ -6,6 +6,7 @@ images = []
 num_images = 0
 
 
+# This all just basically resets the files for distriburttion, so that the game starts fresh
 
 
 # clear the teacher_stats.csv file if it exists
