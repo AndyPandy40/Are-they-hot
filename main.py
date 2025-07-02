@@ -9,6 +9,8 @@ pygame.init()
 
 GREEN = (0, 255, 0)
 LIGHT_GREEN = (0, 200, 0)
+RED = (255, 0, 0)
+LIGHT_RED = (200, 0, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -41,13 +43,6 @@ class mainGame:
 
         self.num_photos = 0
 
-
-        self.images = {}
-
-
-        # Load all PNG and JPG images from teacher_photos folder
-
-
         self.teacher_stats = []
 
         # Read the CSV file into a list of dictionaries
@@ -57,27 +52,8 @@ class mainGame:
                 self.num_photos += 1
                 self.teacher_stats.append(row)
 
-        #output the dictionary
-        #print(teacher_stats)
-
-        
 
         self.generate_new_images()
-
-        # Get the image's width and height
-        width, height = self.teacher1_photo.get_width(), self.teacher1_photo.get_height()
-
-        # Check if the image exceeds the max dimensions
-        if width > self.MAX_WIDTH or height > self.MAX_HEIGHT:
-            # Calculate scale factor to keep the aspect ratio
-            scale_factor = 3*min(self.MAX_WIDTH / width, self.MAX_HEIGHT / height)
-            new_width = int(width * scale_factor)
-            new_height = int(height * scale_factor)
-
-            # Resize the image using smoothscale (better quality, prevents rotation)
-            self.teacher1_photo = pygame.transform.smoothscale(self.teacher1_photo, (new_width, new_height))
-
-
 
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -88,8 +64,8 @@ class mainGame:
         self.rand_num_2 = random.randint(0, self.num_photos - 1)  # Use 0-based indexing
 
 
-        self.Button1 = Button(self.screen, GREEN, LIGHT_GREEN, "person 1", (self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option)
-        self.Button2 = Button(self.screen, GREEN, LIGHT_GREEN, "person 2", (3*self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option)
+        self.Button1 = Button(self.screen, GREEN, LIGHT_GREEN, "person 1", (self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option_1)
+        self.Button2 = Button(self.screen, GREEN, LIGHT_GREEN, "person 2", (3*self.screen_width//4 - 225, self.screen_height-100), 450, 100, 40, self.choose_option_2)
 
 
     def mainloop(self):
@@ -107,7 +83,7 @@ class mainGame:
 
             
 
-            self.clock.tick(120)
+            self.clock.tick(60)
 
     def display_stuff(self):
         self.screen.fill(WHITE)
@@ -142,7 +118,7 @@ class mainGame:
 
 
 
-    def scale_image(self, path):
+    def scale_image(self, path):  # Chat gpt image stuff 
         # Load the image using PIL to respect EXIF orientation
         pil_image = Image.open(path)
         pil_image = ImageOps.exif_transpose(pil_image)  # Rotates image based on EXIF metadata
@@ -165,8 +141,35 @@ class mainGame:
         pygame.quit()
         exit()
 
-    def choose_option(self):
+    def choose_option_1(self):
 
+        self.teacher_stats[self.rand_num_1]["Score"] = int(self.teacher_stats[self.rand_num_1]["Score"]) + 5
+        self.teacher_stats[self.rand_num_2]["Score"] = int(self.teacher_stats[self.rand_num_2]["Score"]) - 5
+
+        # Save the updated scores back to the CSV file
+        with open('teacher_stats.csv', 'w', newline='') as csvfile:
+            fieldnames = self.teacher_stats[0].keys()
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(self.teacher_stats)
+
+
+        # Generate new images when a button is clicked
+        self.generate_new_images()
+
+    def choose_option_2(self):
+
+        self.teacher_stats[self.rand_num_2]["Score"] = int(self.teacher_stats[self.rand_num_2]["Score"]) + 5
+        self.teacher_stats[self.rand_num_1]["Score"] = int(self.teacher_stats[self.rand_num_1]["Score"]) - 5
+
+
+
+        # Save the updated scores back to the CSV file
+        with open('teacher_stats.csv', 'w', newline='') as csvfile:
+            fieldnames = self.teacher_stats[0].keys()
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(self.teacher_stats)
 
 
         # Generate new images when a button is clicked
