@@ -108,16 +108,18 @@ class mainGame:
         while self.rand_num_1 == self.rand_num_2:
             self.rand_num_2 = random.randint(0, self.num_photos - 1)
 
-        # Get random images based on the random numbers
-        self.teacher1_photo = pygame.image.load(self.teacher_stats[self.rand_num_1]["Photo"])
-        self.teacher2_photo = pygame.image.load(self.teacher_stats[self.rand_num_2]["Photo"])
+        # Get the filename from stats
+        photo1_filename = self.teacher_stats[self.rand_num_1]["Photo"]
+        photo2_filename = self.teacher_stats[self.rand_num_2]["Photo"]
 
-                        
-        photo1_path = os.path.normpath(self.teacher_stats[self.rand_num_1]["Photo"])
-        photo2_path = os.path.normpath(self.teacher_stats[self.rand_num_2]["Photo"])
+        # Build full paths
+        photo1_path = os.path.join("teacher_photos", photo1_filename)
+        photo2_path = os.path.join("teacher_photos", photo2_filename)
 
+        # Scale and assign
         self.teacher1_photo = self.scale_image(photo1_path)
         self.teacher2_photo = self.scale_image(photo2_path)
+
 
 
 
@@ -155,7 +157,7 @@ class mainGame:
         number += 1
 
         # Write the updated number back to the file
-        with open("counter.txt", "w") as file:
+        with open("User_data.txt", "w") as file:
             file.write(str(number))
 
         # close the file
@@ -192,7 +194,7 @@ class mainGame:
         number += 1
 
         # Write the updated number back to the file
-        with open("counter.txt", "w") as file:
+        with open("User_data.txt", "w") as file:
             file.write(str(number))
 
         # close the file

@@ -1,5 +1,6 @@
 import csv
 import glob
+import os
 
 
 images = []
@@ -23,7 +24,8 @@ with open("User_data.txt", "w") as file:
 
 
 for filepath in glob.glob("teacher_photos/*.png") + glob.glob("teacher_photos/*.jpg") + glob.glob("teacher_photos/*.jpeg") + glob.glob("teacher_photos/*.jfif"):
-    images.append(filepath.split("/")[-1])
+    filename = os.path.basename(filepath)  # Safely gets just the file name
+    images.append(filename)
     num_images += 1
 
 with open("teacher_stats.csv", "w", newline='') as csvfile:
